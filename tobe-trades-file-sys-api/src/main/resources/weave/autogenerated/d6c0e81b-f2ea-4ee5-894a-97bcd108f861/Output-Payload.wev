@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_d6c0e81b_f2ea_4ee5_894a_97bcd108f861_Output_Payload = {
+  symbol: String, 
+  quantity: Number, 
+  price: Number, 
+  index: String, 
+  "type": String, 
+  operation: String, 
+  _?: Any
+}
+
