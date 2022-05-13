@@ -1,25 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<configuration-properties doc:name="Configuration properties" doc:id="c4a86e56-1ddc-462d-8122-a7b3277ebca6" file="config/${env}.properties" />
-	<configuration doc:name="Configuration" doc:id="f47c5b60-2c84-4f4d-9d8d-53ce8eb99055" defaultErrorHandler-ref="globalError_Handler" />
-	<error-handler name="globalError_Handler" doc:id="300c72db-3db4-42d2-8c68-1d99b0f034bc" >
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="aca95b71-1dac-4f80-a780-7ad95216ebe6" type="ANY">
-			<ee:transform doc:name="set error" doc:id="386d7ecd-294b-4a12-9027-947047e20e6a" >
-				<ee:message >
-					<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-{
-	message: "Error has occurred.",
-	error: {
-		description: error.description,
-	    errorType: error.errorType.asString
-	}
-}]]></ee:set-payload>
+	<http:listener-config
+		name="tobe-trades-file-sys-api-httpListenerConfig"
+		basePath="tobe-trades-file-sys-api">
+		<http:listener-connection host="0.0.0.0"
+			port="8081" />
+	</http:listener-config>
+	<apikit:config name="tobe-trades-file-sys-api-config"
+		api="resource::319929de-3dc1-4fd4-b01b-f875a72b5868:tobe-trades-file-sys-api:1.0.0:raml:zip:tobe-trades-file-sys-api.raml"
+		outboundHeadersMapName="outboundHeaders"
+		httpStatusVarName="httpStatus" />
+	<file:config name="File_Config" doc:name="File Config"
+		doc:id="1e0a4400-6bca-46e5-bae5-50058cf9ec52" />
+	<configuration-properties
+		doc:name="Configuration properties"
+		doc:id="c4a86e56-1ddc-462d-8122-a7b3277ebca6"
+		file="config/${env}.properties" />
+	<configuration doc:name="Configuration"
+		doc:id="f47c5b60-2c84-4f4d-9d8d-53ce8eb99055"
+		defaultErrorHandler-ref="globalError_Handler" />
+	<error-handler name="globalError_Handler"
+		doc:id="300c72db-3db4-42d2-8c68-1d99b0f034bc">
+		<on-error-propagate enableNotifications="true"
+			logException="true" doc:name="On Error Propagate"
+			doc:id="aca95b71-1dac-4f80-a780-7ad95216ebe6" type="ANY">
+			<ee:transform doc:name="set error"
+				doc:id="386d7ecd-294b-4a12-9027-947047e20e6a">
+				<ee:message>
+					<ee:set-payload resource="dw/errorPayload.dwl" />
 				</ee:message>
 			</ee:transform>
 		</on-error-propagate>
